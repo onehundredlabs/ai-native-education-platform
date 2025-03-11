@@ -10,11 +10,13 @@ export const Route = createRootRoute({
       <Header />
 
       <div className="container mx-auto flex justify-between">
-        <LeftPanel />
+        <LeftPanel className="w-2/12" />
 
-        <Outlet />
+        <main className="w-8/12">
+          <Outlet />
+        </main>
 
-        <RightPanel />
+        <RightPanel className="w-2/12" />
       </div>
 
       <TanStackRouterDevtools />

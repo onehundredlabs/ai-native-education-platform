@@ -12,12 +12,26 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as IntroductionMaterialImport } from './routes/introduction/material'
+import { Route as IntroductionExerciseImport } from './routes/introduction/exercise'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IntroductionMaterialRoute = IntroductionMaterialImport.update({
+  id: '/introduction/material',
+  path: '/introduction/material',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IntroductionExerciseRoute = IntroductionExerciseImport.update({
+  id: '/introduction/exercise',
+  path: '/introduction/exercise',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,6 +46,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/introduction/exercise': {
+      id: '/introduction/exercise'
+      path: '/introduction/exercise'
+      fullPath: '/introduction/exercise'
+      preLoaderRoute: typeof IntroductionExerciseImport
+      parentRoute: typeof rootRoute
+    }
+    '/introduction/material': {
+      id: '/introduction/material'
+      path: '/introduction/material'
+      fullPath: '/introduction/material'
+      preLoaderRoute: typeof IntroductionMaterialImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/introduction/exercise': typeof IntroductionExerciseRoute
+  '/introduction/material': typeof IntroductionMaterialRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/introduction/exercise': typeof IntroductionExerciseRoute
+  '/introduction/material': typeof IntroductionMaterialRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/introduction/exercise': typeof IntroductionExerciseRoute
+  '/introduction/material': typeof IntroductionMaterialRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/introduction/exercise' | '/introduction/material'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/introduction/exercise' | '/introduction/material'
+  id: '__root__' | '/' | '/introduction/exercise' | '/introduction/material'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  IntroductionExerciseRoute: typeof IntroductionExerciseRoute
+  IntroductionMaterialRoute: typeof IntroductionMaterialRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  IntroductionExerciseRoute: IntroductionExerciseRoute,
+  IntroductionMaterialRoute: IntroductionMaterialRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +115,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/introduction/exercise",
+        "/introduction/material"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/introduction/exercise": {
+      "filePath": "introduction/exercise.tsx"
+    },
+    "/introduction/material": {
+      "filePath": "introduction/material.tsx"
     }
   }
 }
