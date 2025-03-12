@@ -11,11 +11,19 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
-import { Route as IntroductionMaterialImport } from './routes/introduction/material'
-import { Route as IntroductionExerciseImport } from './routes/introduction/exercise'
+import { Route as SignUpIndexImport } from './routes/sign-up/index'
+import { Route as SignInIndexImport } from './routes/sign-in/index'
+import { Route as AuthenticatedIntroductionMaterialImport } from './routes/_authenticated/introduction/material'
+import { Route as AuthenticatedIntroductionExerciseImport } from './routes/_authenticated/introduction/exercise'
 
 // Create/Update Routes
+
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -23,17 +31,31 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IntroductionMaterialRoute = IntroductionMaterialImport.update({
-  id: '/introduction/material',
-  path: '/introduction/material',
+const SignUpIndexRoute = SignUpIndexImport.update({
+  id: '/sign-up/',
+  path: '/sign-up/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const IntroductionExerciseRoute = IntroductionExerciseImport.update({
-  id: '/introduction/exercise',
-  path: '/introduction/exercise',
+const SignInIndexRoute = SignInIndexImport.update({
+  id: '/sign-in/',
+  path: '/sign-in/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const AuthenticatedIntroductionMaterialRoute =
+  AuthenticatedIntroductionMaterialImport.update({
+    id: '/introduction/material',
+    path: '/introduction/material',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+
+const AuthenticatedIntroductionExerciseRoute =
+  AuthenticatedIntroductionExerciseImport.update({
+    id: '/introduction/exercise',
+    path: '/introduction/exercise',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -46,63 +68,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/introduction/exercise': {
-      id: '/introduction/exercise'
-      path: '/introduction/exercise'
-      fullPath: '/introduction/exercise'
-      preLoaderRoute: typeof IntroductionExerciseImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
-    '/introduction/material': {
-      id: '/introduction/material'
+    '/sign-in/': {
+      id: '/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-up/': {
+      id: '/sign-up/'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/introduction/exercise': {
+      id: '/_authenticated/introduction/exercise'
+      path: '/introduction/exercise'
+      fullPath: '/introduction/exercise'
+      preLoaderRoute: typeof AuthenticatedIntroductionExerciseImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/introduction/material': {
+      id: '/_authenticated/introduction/material'
       path: '/introduction/material'
       fullPath: '/introduction/material'
-      preLoaderRoute: typeof IntroductionMaterialImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthenticatedIntroductionMaterialImport
+      parentRoute: typeof AuthenticatedImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedIntroductionExerciseRoute: typeof AuthenticatedIntroductionExerciseRoute
+  AuthenticatedIntroductionMaterialRoute: typeof AuthenticatedIntroductionMaterialRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedIntroductionExerciseRoute:
+    AuthenticatedIntroductionExerciseRoute,
+  AuthenticatedIntroductionMaterialRoute:
+    AuthenticatedIntroductionMaterialRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/introduction/exercise': typeof IntroductionExerciseRoute
-  '/introduction/material': typeof IntroductionMaterialRoute
+  '': typeof AuthenticatedRouteWithChildren
+  '/sign-in': typeof SignInIndexRoute
+  '/sign-up': typeof SignUpIndexRoute
+  '/introduction/exercise': typeof AuthenticatedIntroductionExerciseRoute
+  '/introduction/material': typeof AuthenticatedIntroductionMaterialRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/introduction/exercise': typeof IntroductionExerciseRoute
-  '/introduction/material': typeof IntroductionMaterialRoute
+  '': typeof AuthenticatedRouteWithChildren
+  '/sign-in': typeof SignInIndexRoute
+  '/sign-up': typeof SignUpIndexRoute
+  '/introduction/exercise': typeof AuthenticatedIntroductionExerciseRoute
+  '/introduction/material': typeof AuthenticatedIntroductionMaterialRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/introduction/exercise': typeof IntroductionExerciseRoute
-  '/introduction/material': typeof IntroductionMaterialRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/sign-in/': typeof SignInIndexRoute
+  '/sign-up/': typeof SignUpIndexRoute
+  '/_authenticated/introduction/exercise': typeof AuthenticatedIntroductionExerciseRoute
+  '/_authenticated/introduction/material': typeof AuthenticatedIntroductionMaterialRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/introduction/exercise' | '/introduction/material'
+  fullPaths:
+    | '/'
+    | ''
+    | '/sign-in'
+    | '/sign-up'
+    | '/introduction/exercise'
+    | '/introduction/material'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/introduction/exercise' | '/introduction/material'
-  id: '__root__' | '/' | '/introduction/exercise' | '/introduction/material'
+  to:
+    | '/'
+    | ''
+    | '/sign-in'
+    | '/sign-up'
+    | '/introduction/exercise'
+    | '/introduction/material'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/sign-in/'
+    | '/sign-up/'
+    | '/_authenticated/introduction/exercise'
+    | '/_authenticated/introduction/material'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  IntroductionExerciseRoute: typeof IntroductionExerciseRoute
-  IntroductionMaterialRoute: typeof IntroductionMaterialRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  SignInIndexRoute: typeof SignInIndexRoute
+  SignUpIndexRoute: typeof SignUpIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  IntroductionExerciseRoute: IntroductionExerciseRoute,
-  IntroductionMaterialRoute: IntroductionMaterialRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  SignInIndexRoute: SignInIndexRoute,
+  SignUpIndexRoute: SignUpIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,18 +205,34 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/introduction/exercise",
-        "/introduction/material"
+        "/_authenticated",
+        "/sign-in/",
+        "/sign-up/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/introduction/exercise": {
-      "filePath": "introduction/exercise.tsx"
+    "/_authenticated": {
+      "filePath": "_authenticated.tsx",
+      "children": [
+        "/_authenticated/introduction/exercise",
+        "/_authenticated/introduction/material"
+      ]
     },
-    "/introduction/material": {
-      "filePath": "introduction/material.tsx"
+    "/sign-in/": {
+      "filePath": "sign-in/index.tsx"
+    },
+    "/sign-up/": {
+      "filePath": "sign-up/index.tsx"
+    },
+    "/_authenticated/introduction/exercise": {
+      "filePath": "_authenticated/introduction/exercise.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/introduction/material": {
+      "filePath": "_authenticated/introduction/material.tsx",
+      "parent": "/_authenticated"
     }
   }
 }
