@@ -9,14 +9,13 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function RouteComponent() {
-  console.log("RouteComponent");
-
   return (
     <>
       <SignedIn>
         <Header />
 
-        <div className="container mx-auto flex justify-between">
+        {/* 68.5px is the height of the header */}
+        <div className="container mx-auto flex justify-between h-[calc(100vh-68.5px)]">
           <LeftPanel className="w-2/12" />
 
           <main className="w-8/12">
@@ -26,8 +25,8 @@ function RouteComponent() {
           <RightPanel className="w-2/12" />
         </div>
       </SignedIn>
+
       <SignedOut>
-        
         <Navigate to="/sign-in" />
       </SignedOut>
     </>
